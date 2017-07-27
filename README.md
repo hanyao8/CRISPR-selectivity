@@ -2,10 +2,15 @@
 Project to investigate targeting selectivity in the CRISPR CAS9 system using mean field models and other algorithms
 
 Folders:
+
 -Algorithms
+
 -Model 1
+
 -Model 2
+
 -Model 3
+
 -nt_data
 
 
