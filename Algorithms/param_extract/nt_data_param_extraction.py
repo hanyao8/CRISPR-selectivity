@@ -7,14 +7,14 @@
 with open(r'C:\Users\Choon\Desktop\CRISPR\Code\nt_data\chromosome_20_complete.txt', 'r') as myfile:
     #data=myfile.read()
     data=myfile.read().replace('\n', '')
-    data=data[12888830:12888860]
+    #data=data[12888830:12888860]
 
 len_data=len(data)
 
-N_A_G=data[0:len_data-1].count('A')
-N_T_G=data[0:len_data-1].count('T')
-N_C_G=data[0:len_data-1].count('C')
-N_G_G=data[0:len_data-1].count('G')
+N_A_G=float(data[0:len_data-1].count('A'))
+N_T_G=float(data[0:len_data-1].count('T'))
+N_C_G=float(data[0:len_data-1].count('C'))
+N_G_G=float(data[0:len_data-1].count('G'))
 
 p_A=N_A_G/(N_A_G+N_T_G+N_C_G+N_G_G)
 p_T=N_T_G/(N_A_G+N_T_G+N_C_G+N_G_G)
@@ -37,7 +37,7 @@ pair_2_count={'AA':0,'AT':0,'AC':0,'AG':0,'TA':0,'TT':0,'TC':0,'TG':0,'CA':0,'CT
 
 #ATCG, A=0, T=1, C=2, G=3
 
-for i in range(0,len_data-1):
+for i in range(0,len(data)-1):
     if data[i] !='N': 
         pair_2_count[data[i:i+2]]+=1
         

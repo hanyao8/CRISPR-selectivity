@@ -9,8 +9,9 @@ k_B=1.38e-23
 N_avo=6.022e23
 T=310
 beta=1/k_B/T
-BE=-0.0545*(1.6e-19) #Average binding energy corresponding to the below sequence used, derived from Santa Lucia 1998
-N_G=(64444167-499910)
+#BE=-0.0545*(1.6e-19) #Average binding energy corresponding to the below sequence used, derived from Santa Lucia 1998
+#N_G=(64444167-499910)
+N_G=63944000
 
 #Nucleotide frequencies in the targeted genome
 p_A=0.2794
@@ -30,11 +31,7 @@ p_C=0.3
 p_G=0.4
 """
 #Expressing the same information as a matrix
-p=[0,0,0,0]
-p[0]=p_A
-p[1]=p_T
-p[2]=p_C
-p[3]=p_G
+p=[p_A,p_T,p_C,p_G]
 
 #Number of ATCG nucleotides in the targeting sequence
 n_A=0
@@ -43,7 +40,9 @@ n_C=0
 n_G=0
 
 #User defined targeting sequence
-ts=["T","T","A","T","C","T","G","T","T","C","T","G","G","T","G","T","T","C","G","T"]
+ts='TTTATAATGTATAAAAACTA'
+ts=list(ts)
+#ts=["T","T","A","T","C","T","G","T","T","C","T","G","G","T","G","T","T","C","G","T"]
 ts_len=len(ts) #Length of the targeting sequence
 
 #Complementary sequence and its probability of occuring in the genome to be computed
@@ -368,11 +367,38 @@ G_dpx[3][3][3][3]=(G_avg_GG+G_avg_GG)
 
 #Total number of energies does add up to 256
 
+
+
+
+
+
+#Initiation Energies
+"""
 G_init=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 G_init[2][3]=G_init[3][2]=0# +0.98*4184/N_avo
 G_init[0][1]=G_init[1][0]=0# +1.03*4184/N_avo#
+"""    
+#initiation energies
+#WC Pairs
+G_init=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+G_init[2][3]=G_init[3][2]= +0.98*4184/N_avo
+G_init[0][1]=G_init[1][0]= +1.03*4184/N_avo
 
-     
+#non-WC Pairs, energy values due for review
+G_init[0][0]= +1.005*4184/N_avo
+G_init[0][2]=G_init[2][0]= +1.005*4184/N_avo
+G_init[0][3]=G_init[3][0]= +1.005*4184/N_avo
+G_init[1][1]= +1.005*4184/N_avo
+G_init[1][2]=G_init[2][1]= +1.005*4184/N_avo
+G_init[1][3]=G_init[3][1]= +1.005*4184/N_avo
+G_init[2][2]= +1.005*4184/N_avo
+G_init[3][3]= +1.005*4184/N_avo
+
+   
+         
+         
+         
+           
 
 #Initiation of the partition function factorisation- i.e. the first nucleotide position of the sequence
 #Defining a vector to aid the calculation of Z
@@ -401,12 +427,16 @@ v_Z=[v_Z[0]*np.exp(-beta*G_init[0][ts_n[ts_len-1]]),v_Z[4]*np.exp(-beta*G_init[1
     
 Z=sum(v_Z)
 
+
 G_compl=G_init[cs_n[0]][ts_n[0]]+G_init[cs_n[ts_len-1]][ts_n[ts_len-1]]
 for i in range(1,ts_len):
     G_compl += G_dpx[cs_n[i-1]][cs_n[i]][ts_n[i-1]][ts_n[i]]
 
+a=np.exp(-beta*G_compl)
 q_compl=p_cs * np.exp(-beta*G_compl)
 S=1/((Z/q_compl)-1) 
-S_real=S/(N_G-ts_len)/p_cs
+#S_real=S/(N_G-ts_len)/p_cs
+S_real=np.exp(-beta*G_compl)/N_G/Z
+print(S_real)
 
 #The model requires defect energies to be known. At this moment it gives a somewhat erroneous value for the partition function

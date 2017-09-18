@@ -11,7 +11,7 @@ import single_walk as sw
 
 switch=1
 
-n_sims=6
+n_sims=5
 PAM='CT' #NCT
 
 with open(r'C:\Users\Choon\Desktop\CRISPR\Code\nt_data\chromosome_20_complete.txt', 'r') as myfile1:
@@ -62,7 +62,7 @@ if switch ==1:
     random_site=int(nr.choice(sites))
     print "random site=%d" %random_site
     
-    ts_start=16
+    ts_start=15
     ts_end=ts_start+n_sims-1
     
     for ts_len in range(ts_start,ts_end+1):
