@@ -13,6 +13,7 @@ zero binding energy
 Alternative approach using partition function factorisation
 """
 
+#Note: 11/10/2017
 
 import numpy as np
 import math
