@@ -19,4 +19,5 @@ Models 1,2,3 are mean field models of increasing complexity which calculate the 
 Several algorithms were constructed to compare the results of the mean field models with simulations using real DNA sequence data in human chromosomes. nt_data contains the sequence data.
 
 Project Supervisor: Stefano Angioletti-Uberti
-Thanks to: Enrico Fontana, Harrison Zhu
+
+With thanks to: Enrico Fontana, Harrison Zhu
