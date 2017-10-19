@@ -8,4 +8,4 @@ Several algorithms were constructed to compare the results of the mean field mod
 
 Project Supervisor: Stefano Angioletti-Uberti
 
-With thanks to: Enrico Fontana, Harrison Zhu
+With thanks to: Enrico Fontana, Harrison Zhu, Mike Chen
