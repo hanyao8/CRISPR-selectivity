@@ -196,7 +196,8 @@ class PF:
         DE[3][3]=param[4][3][3] #0.1*BE #GG
                 
         
-        Z=1
+        #Z=1
+        
         #Initiation of the partition function factorisation- i.e. the first nucleotide position of the sequence
         #Defining a vector to aid the calculation of Z
         #ATCG 0123

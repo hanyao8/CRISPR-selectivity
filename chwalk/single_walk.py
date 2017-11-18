@@ -251,7 +251,141 @@ class iter:
         self.__S=1/((self.__Z/self.__q_comp)-1)
 
 
-class random_genome:
+class random_genome2:
+    
+    def __repr__(self):
+        return "A simulation which corresponds to a single walk of a targeting\
+        sequence along a random of DNA defined by statistical parameters input"
+        #ts:%s, \
+        #first position: %g" #% (ts,fp)
+        
+    def __init__(self,param,ts):
+        k_B=param[0][0]
+        T=param[1][0] #(High temp. approximation?)
+        self.__beta=1/k_B/T
+        self.__BE=param[1][1] #epsilon- given by hydrogen bond interactions between complementary NTs
+        self.__N_G=param[1][2]
+        N_avo=param[0][1]
+        
+             
+        
+      
+        #Incorporating non-degenerate defect energies
+        #Expressing this information in a matrix
+        #ATCG 0123
+        
+        DE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+        
+        DE[0][0]=param[4][0][0] #0.1*BE #AA
+        
+        DE[1][0]=DE[0][1]=param[4][1][0] #TA
+        DE[1][1]=param[4][1][1] #0.1*BE #TT
+        
+        DE[2][0]=DE[0][2]=param[4][2][0] #CA
+        DE[2][1]=DE[1][2]=param[4][2][1] #CT
+        DE[2][2]=param[4][2][2] #0.1*BE #CC
+        
+        DE[3][0]=DE[0][3]=param[4][3][0] #GA
+        DE[3][1]=DE[1][3]=param[4][3][1] #GT
+        DE[3][2]=DE[2][3]=param[4][3][2] #GC
+        DE[3][3]=param[4][3][3] #0.1*BE #GG
+    
+        
+        #Initiation Energy
+        #At each end:
+        E_init=1.005*4184/N_avo
+
+        
+        
+
+        ts_len=len(ts)
+        
+        ts_n=[nt_2_n[ts[i]] for i in range(0,ts_len)]
+        
+
+
+  
+        self.__j_list=[]
+        self.__S_j_list=[]
+
+
+        cs=F_cs(ts)
+        
+        print(ts)
+        print(cs)
+        
+        #self.__Z=0
+        #self.__q_comp=0
+        self.__comp_count=0
+        #self.__S=0
+        self.__Z_nc=0.0
+        
+        G_binding=0
+        for k in range(0,ts_len):
+            G_binding+=DE[ nt_2_n[cs[k]] ][ nt_2_n[ts[k]] ]
+                    
+        G_binding+= 2*E_init
+        self.__q_comp=self.__Z=np.exp(-self.__beta*G_binding)
+        #print(self.__q_comp)
+        
+        for j in range(0,self.__N_G-ts_len+1):
+        #for j in range(0,1000000):
+            
+            if (j%100000)==0:
+                mini_genome= [ np.random.choice([0,1,2,3],p=param[2]) ] 
+                for k in range(0,100000+ts_len-1):
+                #for k in range(0,ts_len-1):
+                    #tgds=[np.random.choice(["A","T","C","G"],p=param[2])]
+                    #tgds.append( np.random.choice( ["A","T","C","G"],p=np.array(param[3][0]) ) )
+                    mini_genome.append( np.random.choice( [0,1,2,3],p=param[3][mini_genome[k]] ) ) 
+            
+            x=j%100000
+            
+            tgds=mini_genome[x:x+ts_len]
+            
+            G_binding=0
+            for k in range(0,ts_len):
+                G_binding+=DE[ tgds[k] ][ ts_n[k] ]
+                    
+            G_binding+= 2*E_init
+            #print(np.exp(-self.__beta*G_binding))
+            self.__Z_nc+=np.exp(-self.__beta*G_binding)
+            #print(self.__Z_nc)
+            
+            if (j%50000)==(50000-1):
+                self.__j_list.append(j)
+                S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
+                self.__S_j_list.append(S_j)
+                
+            if (j%100000)==(100000-1):
+                #print(tgds)
+                print(S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
+            
+            """
+            if (j%5000)==(5000-1):
+                print("running... %d" % (j))
+                print(self.__Z)
+                S_j=1/((self.__N_G/j*self.__Z/self.__q_comp)-1)
+                print(S_j)
+            
+            """
+            """
+            if (j%1000)==(1000-1):
+                #print("running... %d" % (j))
+                self.__j_list.append(j)
+                S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
+                #S_j=1/((self.__N_G/j*self.__Z/self.__q_comp)-1)
+                self.__S_j_list.append(S_j)
+                print(self.__Z)
+                print(S_j)
+                #plt.scatter(j,self.__Z,s=0.2)
+                #plt.scatter(j,S_j,s=0.2)
+                #plt.show()
+            """
+            
+        self.__S=self.__q_comp/self.__Z_nc
+
+class random_genome3:
     
     def __repr__(self):
         return "A simulation which corresponds to a single walk of a targeting\

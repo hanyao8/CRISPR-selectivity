@@ -14,12 +14,13 @@ Settings available:
 31: Model 3 with Z factorisation
 41: Chromo-walk with fixed ts length with ts taken from different sites
 42: Chromo-walk at fixed site with varying length
-43: Chromo-walk on random genome
+43: Chromo-walk on random genome for model 2
+44: Chromo-walk on random genome for model 3
 """
 
 import numpy as np
 
-run_model=21
+run_model=43
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -388,8 +389,12 @@ if run_model==41:
 if run_model==42:
     import chwalk.cmain
     sim42=chwalk.cmain.sim(model3_params,ts,ts_len_start42,run_model,n_iters,PAM)
-    
+
 if run_model==43:
     import chwalk.cmain
-    sim43=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
+    sim43=chwalk.cmain.sim(model2_params,ts,ts_len,run_model,n_iters,PAM)
+    
+if run_model==44:
+    import chwalk.cmain
+    sim44=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
 #C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk

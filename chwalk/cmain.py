@@ -96,7 +96,7 @@ class sim:
             plt.ylabel("log(Z_nc)")
             plt.xlabel("Binding Events")
             plt.show()
-            
+
         if switch==43:
             f1=plt.figure()
             f2=plt.figure()
@@ -105,11 +105,11 @@ class sim:
             ax2=f2.add_subplot(111)
             
             for ts_len in range(0,n_iters):
-                a=sw.random_genome(param,ts)
+                a=sw.random_genome2(param,ts)
                 
                 
-                x=np.array(a._random_genome__j_list)
-                y=np.array(a._random_genome__S_j_list)
+                x=np.array(a._random_genome2__j_list)
+                y=np.array(a._random_genome2__S_j_list)
                 
 
                 
@@ -123,11 +123,47 @@ class sim:
                 
 
             
-            ax1.set_title("S")
+            ax1.set_title("Model 2 S")
             ax1.set_ylabel("Adjusted S")
             ax1.set_xlabel("Binding Events")
             
-            ax2.set_title("S")
+            ax2.set_title("Model 2 S")
+            ax2.set_ylabel("log(Adjusted S)")
+            ax2.set_xlabel("Binding Events")
+            
+            plt.show()
+            
+        if switch==44:
+            f1=plt.figure()
+            f2=plt.figure()
+            
+            ax1=f1.add_subplot(111)
+            ax2=f2.add_subplot(111)
+            
+            for ts_len in range(0,n_iters):
+                a=sw.random_genome3(param,ts)
+                
+                
+                x=np.array(a._random_genome3__j_list)
+                y=np.array(a._random_genome3__S_j_list)
+                
+
+                
+                #y=np.log(y)/np.log(10)
+                
+                ax1.plot(x,y)
+                ax2.plot( x,np.log(y)/np.log(10) )
+                #plt.legend(loc=4)
+                
+                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
+                
+
+            
+            ax1.set_title("Model 3 S")
+            ax1.set_ylabel("Adjusted S")
+            ax1.set_xlabel("Binding Events")
+            
+            ax2.set_title("Model 3 S")
             ax2.set_ylabel("log(Adjusted S)")
             ax2.set_xlabel("Binding Events")
             
