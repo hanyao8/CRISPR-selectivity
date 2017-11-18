@@ -389,7 +389,7 @@ class PF:
             G_compl += G_dpx[cs_n[i-1]][cs_n[i]][ts_n[i-1]][ts_n[i]]
         
         a=np.exp(-self.__beta*G_compl)
-        self.__q_compl=p_cs * np.exp(-self.__beta*G_compl)
+        self.__q_comp=p_cs * np.exp(-self.__beta*G_compl)
         self.__S=1/((Z/self.__q_compl)-1) 
         #S_real=S/(N_G-ts_len)/p_cs
         self.__S_real=np.exp(-self.__beta*G_compl)/self.__N_G/Z

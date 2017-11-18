@@ -6,11 +6,20 @@
 targeting sequence (usually 20 nucleotides in length) to a targeted section of a
 DNA strand in terms of the length of the targeting sequence, epsilon and the 
 relative abundance of nucleotides A, T, C and G
+
+Settings available:
+11: Model 1 with Z factorisation
+12: Model 1 without Z factorisation
+21: Model 2 with Z factorisation
+31: Model 3 with Z factorisation
+41: Chromo-walk with fixed ts length with ts taken from different sites
+42: Chromo-walk at fixed site with varying length
+43: Chromo-walk on random genome
 """
 
 import numpy as np
 
-run_model=41
+run_model=43
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -19,7 +28,7 @@ N_avo=6.022e23
 T=310 #(High temp. approximation?)
 #BE=-0.0545*(1.6e-19) #epsilon- given by hydrogen bond interactions between complementary NTs
 BE=-0.038*(1.6e-19)
-N_G=(64444167-499910)
+N_G=(64444167-499910) #Length of chromosome 20 minus 'N' sites
 #63944000
 
 ts='TTTATATACTTTTTGTTTTG'
@@ -29,10 +38,10 @@ ts='TTTATATACTTTTTGTTTTG'
 #########################
 #Chromosome-walk settings
 #########################
-n_iters=5
+n_iters=1
 PAM='CT' #NCT
 ts_len41=20
-ts_start42=15
+ts_len_start42=15
 
 
 
@@ -329,9 +338,9 @@ G_init[3][3]= +1.005*4184/N_avo
 constants=[k_B,N_avo]
 params1=[T,BE,N_G]
 p=[p_A,p_T,p_C,p_G]
-model1_params=[constants,params1,p]
-model2_params=[constants,params1,p,cm,DE]
-model3_params=[constants,params1,p,cm,G_dpx,G_avg,G_init]
+model1_params=np.array([constants,params1,p])
+model2_params=np.array([constants,params1,p,cm,DE])
+model3_params=np.array([constants,params1,p,cm,G_dpx,G_avg,G_init])
 
 #ts='TTATCTGTTCTGGTGTTCGT'
 ts_len=len(ts)
@@ -365,18 +374,20 @@ if run_model==21:
     sim21=model2.PF(model2_params,ts)
     print(sim21._PF__S)
 
-if run_model==3:
+if run_model==31:
     import model3
     sim3=model3.PF(model3_params,ts)
     print(sim3._PF__S_real)
     
 if run_model==41:
     import chwalk.cmain
-    sim41=chwalk.cmain.sim(model3_params,ts_len41,run_model,n_iters,PAM)
+    sim41=chwalk.cmain.sim(model3_params,ts,ts_len41,run_model,n_iters,PAM)
 
 if run_model==42:
     import chwalk.cmain
-    sim42=chwalk.cmain.sim(model3_params,ts_start42,run_model,n_iters,PAM)
+    sim42=chwalk.cmain.sim(model3_params,ts,ts_len_start42,run_model,n_iters,PAM)
     
-    
+if run_model==43:
+    import chwalk.cmain
+    sim43=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
 #C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk

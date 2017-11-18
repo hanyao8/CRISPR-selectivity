@@ -6,7 +6,8 @@ os.chdir("C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk")
 import numpy as np
 import numpy.random as nr
 import matplotlib.pyplot as plt
-import single_walk as sw
+import chwalk.single_walk as sw
+
 
 
 #setting=0: Computation of selectivity of (n_iters) random sequences of the same length
@@ -14,21 +15,21 @@ import single_walk as sw
 
 class sim:
 
-    def __init__(self,param,ts_number,switch,n_iters,PAM):
-
-        with open(r'C:\Users\Choon\Desktop\CRISPR\Code\nt_data\chromosome_20_complete.txt', 'r') as myfile1:
-            #data=myfile.read()
-            data=myfile1.read().replace('\n', '')
-            
-        sites = np.genfromtxt(r'C:\Users\Choon\Desktop\CRISPR\Code\Algorithms\chromo_walk\sites.txt', delimiter='\n')
-        sites = np.array(sites)
-            
-        print (len(sites))
+    def __init__(self,param,ts,ts_number,switch,n_iters,PAM):
+        if switch==41 or switch==42:
+            with open(r'C:\Users\Choon\Desktop\CRISPR\Code\nt_data\chromosome_20_complete.txt', 'r') as myfile1:
+                #data=myfile.read()
+                data=myfile1.read().replace('\n', '')
+                
+            sites = np.genfromtxt(r'C:\Users\Choon\Desktop\CRISPR\Code\Algorithms\chromo_walk\sites.txt', delimiter='\n')
+            sites = np.array(sites)
+                
+            print (len(sites))
         
-        S_list=[]  
-        q_comp_list=[]
+        self.__S_list=[]  
+        self.__q_comp_list=[]
         comp_count_list=[]
-        Z_list=[]
+        self.__Z_list=[]
         
         if switch==41:
         
@@ -48,10 +49,10 @@ class sim:
                 print("i=%d" %(i))
                 a=sw.iter(param,data,i,PAM,ts_len)
                 
-                S_list.append(a._iter__S)
-                q_comp_list.append(a._iter__q_comp)
+                self.__S_list.append(a._iter__S)
+                self.__q_comp_list.append(a._iter__q_comp)
                 comp_count_list.append(a._iter__comp_count)
-                Z_list.append(a._iter__Z)
+                self.__Z_list.append(a._iter__Z)
                 
                 x=np.array(a._iter__j_list)
                 y=np.array(a._iter__Z_nc_list)
@@ -59,7 +60,13 @@ class sim:
                 plt.plot(x,y)
                 
                 print("len(x)=%d, len(y)=%d" %(len(x),len(y)))
-                
+    
+            plt.title("nc Component of Z")
+            plt.ylabel("log(Z_nc)")
+            plt.xlabel("Binding Events")
+            plt.show()
+
+
         if switch==42:
             random_site=int(nr.choice(sites))
             print("random site=%d" %random_site)
@@ -71,10 +78,10 @@ class sim:
                 print("l=%d" %(ts_len))
                 a=sw.iter(param,data,random_site,PAM,ts_len)
                 
-                S_list.append(a._iter__S)
-                q_comp_list.append(a._iter__q_comp)
+                self.__S_list.append(a._iter__S)
+                self.__q_comp_list.append(a._iter__q_comp)
                 comp_count_list.append(a._iter__comp_count)
-                Z_list.append(a._iter__Z)
+                self.__Z_list.append(a._iter__Z)
                 
                 x=np.array(a._iter__j_list)
                 y=np.array(a._iter__Z_nc_list)
@@ -85,7 +92,34 @@ class sim:
                 print("len(x)=%d, len(y)=%d" %(len(x),len(y)))        
             
                 
-        plt.title("nc Component of Z")
-        plt.ylabel("log(Z_nc)")
-        plt.xlabel("Binding Events")
-        plt.show()
+            plt.title("nc Component of Z")
+            plt.ylabel("log(Z_nc)")
+            plt.xlabel("Binding Events")
+            plt.show()
+            
+        if switch==43:
+            for ts_len in range(0,n_iters):
+                a=sw.random_genome(param,ts)
+                
+                
+                x=np.array(a._random_genome__j_list)
+                y=np.array(a._random_genome__S_j_list)
+                
+                #y=np.log(y)/np.log(10)
+                
+                plt.plot(x,y,label="l=%d"%(ts_len))
+                #plt.legend(loc=4)
+                
+                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))        
+            
+                
+            plt.title("S")
+            plt.ylabel("Adjusted S")
+            plt.xlabel("Binding Events")
+            plt.show()
+
+
+
+
+            
+        

@@ -1,3 +1,5 @@
+#Independent file which when run causes sites satisfying the PAM requirement to be created
+
 with open(r'C:\Users\Choon\Desktop\CRISPR\Code\nt_data\chromosome_20_complete.txt', 'r') as myfile:
     #data=myfile.read()
     data=myfile.read().replace('\n', '')
