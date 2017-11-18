@@ -464,18 +464,18 @@ class random_genome:
         self.__q_comp=self.__Z=np.exp(-self.__beta*G_binding)
         #print(self.__q_comp)
         
-        #for j in range(0,self.__N_G-ts_len+1):
-        for j in range(0,1000000):
+        for j in range(0,self.__N_G-ts_len+1):
+        #for j in range(0,1000000):
             
-            if (j%10000)==0:
+            if (j%100000)==0:
                 mini_genome= [ np.random.choice([0,1,2,3],p=param[2]) ] 
-                for k in range(0,10000+ts_len-1):
+                for k in range(0,100000+ts_len-1):
                 #for k in range(0,ts_len-1):
                     #tgds=[np.random.choice(["A","T","C","G"],p=param[2])]
                     #tgds.append( np.random.choice( ["A","T","C","G"],p=np.array(param[3][0]) ) )
                     mini_genome.append( np.random.choice( [0,1,2,3],p=param[3][mini_genome[k]] ) ) 
             
-            x=j%10000
+            x=j%100000
             
             tgds=mini_genome[x:x+ts_len]
             
@@ -493,8 +493,8 @@ class random_genome:
                 S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
                 self.__S_j_list.append(S_j)
                 
-            if (j%10000)==(10000-1):
-                print(tgds)
+            if (j%100000)==(100000-1):
+                #print(tgds)
                 print(S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
             
             """

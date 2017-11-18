@@ -1,7 +1,7 @@
 #chromo_walk main
 
-import os
-os.chdir("C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk")
+#import os
+#os.chdir("C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk")
 
 import numpy as np
 import numpy.random as nr
@@ -98,6 +98,12 @@ class sim:
             plt.show()
             
         if switch==43:
+            f1=plt.figure()
+            f2=plt.figure()
+            
+            ax1=f1.add_subplot(111)
+            ax2=f2.add_subplot(111)
+            
             for ts_len in range(0,n_iters):
                 a=sw.random_genome(param,ts)
                 
@@ -105,17 +111,26 @@ class sim:
                 x=np.array(a._random_genome__j_list)
                 y=np.array(a._random_genome__S_j_list)
                 
+
+                
                 #y=np.log(y)/np.log(10)
                 
-                plt.plot(x,y,label="l=%d"%(ts_len))
+                ax1.plot(x,y)
+                ax2.plot( x,np.log(y)/np.log(10) )
                 #plt.legend(loc=4)
                 
-                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))        
-            
+                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
                 
-            plt.title("S")
-            plt.ylabel("Adjusted S")
-            plt.xlabel("Binding Events")
+
+            
+            ax1.set_title("S")
+            ax1.set_ylabel("Adjusted S")
+            ax1.set_xlabel("Binding Events")
+            
+            ax2.set_title("S")
+            ax2.set_ylabel("log(Adjusted S)")
+            ax2.set_xlabel("Binding Events")
+            
             plt.show()
 
 
