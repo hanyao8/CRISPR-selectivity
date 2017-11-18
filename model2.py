@@ -225,12 +225,17 @@ class PF:
             v_Z[12]=v_Z[13]=v_Z[14]=v_Z[15]=sum(v_Z_temp2[12:16])
             
         #Division by four because the last summation should not take place
-        Z=sum(v_Z)/4
+        self.__Z=sum(v_Z)/4
             
-        self.__q_compl=p_cs * np.exp(-self.__beta*ts_len*self.__BE)
-        self.__S=1/((Z/self.__q_compl)-1) 
+        G_compl=0
+        for i in range(0,ts_len):
+            G_compl += DE[cs_n[i]][ts_n[i]]
+            
+        self.__q_compl=p_cs * np.exp(-self.__beta*G_compl)
+        self.__S=1/((self.__Z/self.__q_compl)-1) 
+        self.__S_real=np.exp(-self.__beta*G_compl)/self.__N_G/self.__Z
         
-        print(self.__S)
+        #print(self.__S)
         
         
         

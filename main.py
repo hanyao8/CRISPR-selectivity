@@ -19,7 +19,7 @@ Settings available:
 
 import numpy as np
 
-run_model=43
+run_model=21
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -108,19 +108,21 @@ cm[3][3]=0.25 #GG
 
 DE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 
-DE[0][0]=0 #0.1*BE #AA
+DE[0][0]=2*1.20*4184/N_avo #0.1*BE #AA
 
-DE[1][0]=DE[0][1]=BE #TA
-DE[1][1]=0 #0.1*BE #TT
+DE[1][0]=DE[0][1]=-2*0.41*4184/N_avo #TA
+DE[1][1]=2*1.15*4184/N_avo #0.1*BE #TT
 
-DE[2][0]=DE[0][2]=0 #CA
-DE[2][1]=DE[1][2]=0 #CT
-DE[2][2]=0 #0.1*BE #CC
+DE[2][0]=DE[0][2]=2*1.56*4184/N_avo #CA
+DE[2][1]=DE[1][2]=2*1.44*4184/N_avo #CT
+DE[2][2]=2*1.69*4184/N_avo #0.1*BE #CC
 
-DE[3][0]=DE[0][3]=0 #GA
-DE[3][1]=DE[1][3]=0 #GT
-DE[3][2]=DE[2][3]=BE #GC
-DE[3][3]=0 #0.1*BE #GG
+DE[3][0]=DE[0][3]=2*0.81*4184/N_avo #GA
+DE[3][1]=DE[1][3]=2*0.75*4184/N_avo #GT
+DE[3][2]=DE[2][3]=-2*1.04*4184/N_avo #GC
+DE[3][3]=2*0.50*4184/N_avo #0.1*BE #GG
+
+
 
 #########################
 #SantaLucia Parameters
@@ -372,12 +374,12 @@ if run_model==12:
 if run_model==21:
     import model2
     sim21=model2.PF(model2_params,ts)
-    print(sim21._PF__S)
+    print(sim21._PF__S_real,sim21._PF__q_compl*(4**20),sim21._PF__Z*sim21._PF__N_G)
 
 if run_model==31:
     import model3
     sim3=model3.PF(model3_params,ts)
-    print(sim3._PF__S_real)
+    print(sim3._PF__S_real,sim3._PF__exp_comp,sim3._PF__Z_nc)
     
 if run_model==41:
     import chwalk.cmain
