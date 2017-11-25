@@ -25,7 +25,11 @@ import numpy as np
 #import os
 import io
 
+<<<<<<< HEAD
 run_model=32
+=======
+run_model=11
+>>>>>>> f7cdfc3b85b03d755910bb538f9631b652bf4e75
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -67,13 +71,19 @@ ts_len_start42=15
 #Statistical Parameters
 #######################
 
+
 """
 p_A=0.25
 p_T=0.25
 p_C=0.25
 p_G=0.25
-"""
 
+
+p_A=0.1
+p_T=0.2
+p_C=0.3
+p_G=0.4
+"""
 p_A=0.2794
 p_T=0.2826
 p_C=0.2176
@@ -98,6 +108,28 @@ cm=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 #ATCG, A=0, T=1, C=2, G=3
 
 """
+cm[0][0]=0.1 #AA
+cm[0][1]=0.2 #AT
+cm[0][2]=0.3 #AC
+cm[0][3]=0.4 #AG
+        
+cm[1][0]=0.1 #TA
+cm[1][1]=0.2 #TT
+cm[1][2]=0.3 #TC
+cm[1][3]=0.4 #TG
+
+cm[2][0]=0.1 #CA
+cm[2][1]=0.2 #CT
+cm[2][2]=0.3 #CC
+cm[2][3]=0.4 #CG
+
+cm[3][0]=0.1 #GA
+cm[3][1]=0.2 #GT
+cm[3][2]=0.3 #GC
+cm[3][3]=0.4 #GG
+
+
+
 cm[0][0]=0.25 #AA
 cm[0][1]=0.25 #AT
 cm[0][2]=0.25 #AC
@@ -117,6 +149,7 @@ cm[3][0]=0.25 #GA
 cm[3][1]=0.25 #GT
 cm[3][2]=0.25 #GC
 cm[3][3]=0.25 #GG
+
 
 """        
 cm[0][0]=0.3148 #AA
@@ -142,7 +175,6 @@ cm[3][3]=0.2708 #GG
 
 
 
-
 #########################
 #Thermodynamic Parameters
 #########################
@@ -152,6 +184,13 @@ cm[3][3]=0.2708 #GG
 #ATCG 0123
 
 DE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+
+
+
+DE[1][0]=DE[0][1]=BE #TA
+DE[3][2]=DE[2][3]=BE #GC
+
+
 
 DE[0][0]=2*1.20*4184/N_avo #0.1*BE #AA
 
@@ -325,6 +364,7 @@ G_init=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 G_init[2][3]=G_init[3][2]=0# +0.98*4184/N_avo
 G_init[0][1]=G_init[1][0]=0# +1.03*4184/N_avo#
 """    
+
 #initiation energies
 #WC Pairs
 G_init=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
@@ -418,8 +458,11 @@ for a in range(0,ts_len):
 if run_model==11:
     import model1
     sim11=model1.PF(model1_params,ts)
+
     print("S_real=",sim11._PF__S_real,"q_exp=",sim11._PF__q_exp,"Z=",sim11._PF__Z)
-    
+
+    print(sim11._PF__S_real,sim11._PF__q_compl*(4**20),sim11._PF__Z*sim11._PF__N_G)
+
 if run_model==12:
     import model1
     sim12=model1.NPF(model1_params,ts)
