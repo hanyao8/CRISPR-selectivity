@@ -8,19 +8,24 @@ DNA strand in terms of the length of the targeting sequence, epsilon and the
 relative abundance of nucleotides A, T, C and G
 
 Settings available:
-11: Model 1 with Z factorisation
-12: Model 1 without Z factorisation
-21: Model 2 with Z factorisation
-31: Model 3 with Z factorisation
+11: Model 1 MFT with Z factorisation
+12: Model 1 MFT without Z factorisation
+21: Model 2 MFT with Z factorisation
+31: Model 3 MFT with Z factorisation
+32: Model 3 MFT Composition and entropy vs complementary exponent, Z, S data generation
+33: Model 3 MFT ts_len vs complementary exponent, Z, S data generation
 41: Chromo-walk with fixed ts length with ts taken from different sites
 42: Chromo-walk at fixed site with varying length
-43: Chromo-walk on random genome for model 2
-44: Chromo-walk on random genome for model 3
+43: Chromo-walk on random genome for model 1
+44: Chromo-walk on random genome for model 2
+45: Chromo-walk on random genome for model 3
 """
 
 import numpy as np
+#import os
+import io
 
-run_model=43
+run_model=32
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -32,16 +37,27 @@ BE=-0.038*(1.6e-19)
 N_G=(64444167-499910) #Length of chromosome 20 minus 'N' sites
 #63944000
 
-ts='TTTATATACTTTTTGTTTTG'
+#ts='ACATTAGGGT'
+ts='CGGTCCGT'
+#ts='TTTATATACT'
+#ts='TTTATATACTTTTTGTTTTG'
+#ts='GCGCGCGCGCGCGCGCGCGC'
 
+########################
+#run_model=32 settings
+ts_len_32=20
+########################
 
 
 #########################
 #Chromosome-walk settings
 #########################
-n_iters=1
+n_iters=1000000
+#n_iters=30000
+#n_iters=5
+#n_iters=int(1e6)
 PAM='CT' #NCT
-ts_len41=20
+ts_len41=8
 ts_len_start42=15
 
 
@@ -51,11 +67,17 @@ ts_len_start42=15
 #Statistical Parameters
 #######################
 
+"""
 p_A=0.25
 p_T=0.25
 p_C=0.25
 p_G=0.25
+"""
 
+p_A=0.2794
+p_T=0.2826
+p_C=0.2176
+p_G=0.2204
 
 #Note that the correlated probabilities are only defined for a specific direction
 #Either 3' --> 5' or 5' --> 3'
@@ -74,7 +96,8 @@ cm=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 #GA GT GC GG
         
 #ATCG, A=0, T=1, C=2, G=3
-        
+
+"""
 cm[0][0]=0.25 #AA
 cm[0][1]=0.25 #AT
 cm[0][2]=0.25 #AC
@@ -94,6 +117,27 @@ cm[3][0]=0.25 #GA
 cm[3][1]=0.25 #GT
 cm[3][2]=0.25 #GC
 cm[3][3]=0.25 #GG
+
+"""        
+cm[0][0]=0.3148 #AA
+cm[0][1]=0.2445 #AT
+cm[0][2]=0.1805 #AC
+cm[0][3]=0.2602 #AG
+        
+cm[1][0]=0.1953 #TA
+cm[1][1]=0.3208 #TT
+cm[1][2]=0.2151 #TC
+cm[1][3]=0.2688 #TG
+
+cm[2][0]=0.3425 #CA
+cm[2][1]=0.3332 #CT
+cm[2][2]=0.2687 #CC
+cm[2][3]=0.0556 #CG
+
+cm[3][0]=0.2800 #GA
+cm[3][1]=0.2317 #GT
+cm[3][2]=0.2175 #GC
+cm[3][3]=0.2708 #GG
 
 
 
@@ -326,7 +370,16 @@ G_init[3][3]= +1.005*4184/N_avo
 
 
 
+def F_cs(s): #Find complementary sequence
+    s=list(s)
+    comp={'A':'T','T':'A','C':'G','G':'C'}
+    for i in range(0,len(s)):
+        s[i]=comp[s[i]]
+    s=''.join(s)
+    return s
+    
 
+nt_2_n={'A':0,'T':1,'C':2,'G':3}
 
 
 
@@ -365,7 +418,7 @@ for a in range(0,ts_len):
 if run_model==11:
     import model1
     sim11=model1.PF(model1_params,ts)
-    print(ts_len,sim11._PF__S,sim11._PF__S_real)
+    print("S_real=",sim11._PF__S_real,"q_exp=",sim11._PF__q_exp,"Z=",sim11._PF__Z)
     
 if run_model==12:
     import model1
@@ -375,12 +428,123 @@ if run_model==12:
 if run_model==21:
     import model2
     sim21=model2.PF(model2_params,ts)
-    print(sim21._PF__S_real,sim21._PF__q_compl*(4**20),sim21._PF__Z*sim21._PF__N_G)
+    print("S_real=",sim21._PF__S_real,"q_comp_exp=",sim21._PF__q_exp,"Z=",sim21._PF__Z)
 
 if run_model==31:
     import model3
-    sim3=model3.PF(model3_params,ts)
-    print(sim3._PF__S_real,sim3._PF__exp_comp,sim3._PF__Z_nc)
+    sim31=model3.PF(model3_params,ts)
+    print("S_real=",sim31._PF__S_real,"q_comp_exp=",sim31._PF__exp_comp,"Z=",sim31._PF__Z)
+    
+if run_model==32:
+    import model3
+    data_sheet=io.open("C:\\Users\\Choon\\Desktop\\CRISPR\\Code\\results\\result41.txt",'a') #w indicates that the file is writable
+    #data_sheet=os.open("C:\\Users\\Choon\\Desktop\\CRISPR\\Code\\results\\result1.txt",'a') #w indicates that the file is writable
+    #data_sheet=open("C:\Users\Choon\Desktop\CRISPR\Code\results\result1.txt","w+")
+    
+    for i in range(0,n_iters):
+        
+        if i%5000==0:
+            print("running... i=",i)
+    
+        ts=np.random.choice(['A','T','C','G'])
+        for i in range(1,ts_len_32):
+            ts+=np.random.choice(['A','T','C','G'])
+        
+        cs=F_cs(ts)
+        ts_n=[nt_2_n[ts[i]] for i in range(0,len(ts))]
+        cs_n=[nt_2_n[cs[i]] for i in range(0,len(cs))]
+        
+        sim32=model3.PF(model3_params,ts)
+        
+        A_frac=ts.count('A')/ts_len_32
+        T_frac=ts.count('T')/ts_len_32
+        C_frac=ts.count('C')/ts_len_32
+        G_frac=ts.count('G')/ts_len_32
+        frac=np.array([A_frac,T_frac,C_frac,G_frac])
+        
+        """
+        info=0.0
+        for i in range(0,4):
+            for j in range(0,4):
+                info+= -(cm[i][j]*p[i])*np.log(cm[i][j]*p[i])
+        """
+
+        info1=0.0
+        for i in range(0,4):
+            if frac[i] > 1/(ts_len_32+1):
+                info1+= -frac[i]*np.log(frac[i])
+        
+        #info2=0.0
+        
+        
+        GC_frac=(ts.count('G')+ts.count('C'))/ts_len_32
+        q_comp_exp=sim32._PF__exp_comp
+        Z=sim32._PF__Z
+        N_G_32=sim32._PF__N_G
+        S_real=sim32._PF__S_real
+        Boltz_prob=sim32._PF__Boltz_prob
+
+        row= ts +","+ str(ts_len_32) +","+ str(info1)  +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) + "\n"        
+        #row= ts +","+ str(ts_len_32) +","+ str(info1) +","+ str(info2) +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) + "\n"
+        #row= ts +","+ ts_len_32 +","+ info +","+ GC_compo +","+ G_compo +","+ q_comp_exp +","+ Z +","+ N_G_32 +","+ S_real +","+ Boltz_prob + "\n"
+        data_sheet.write(row)
+
+if run_model==33: #Looping over sequences with different ts_len
+    import model3
+    data_sheet=io.open("C:\\Users\\Choon\\Desktop\\CRISPR\\Code\\results\\result5.txt",'a') #w indicates that the file is writable
+    
+    ts_len_test_min=5
+    ts_len_test_max=35
+    
+    for i in range(0,n_iters): 
+        if i%500==0:
+            print("running... i=",i) 
+            
+        for j in range(ts_len_test_min,ts_len_test_max+1):
+            ts=np.random.choice(['A','T','C','G'])
+            for i in range(1,j):
+                ts+=np.random.choice(['A','T','C','G'])
+            
+            cs=F_cs(ts)
+            ts_n=[nt_2_n[ts[i]] for i in range(0,len(ts))]
+            cs_n=[nt_2_n[cs[i]] for i in range(0,len(cs))]
+            
+            sim33=model3.PF(model3_params,ts)
+            
+            A_frac=ts.count('A')/j
+            T_frac=ts.count('T')/j
+            C_frac=ts.count('C')/j
+            G_frac=ts.count('G')/j
+            frac=np.array([A_frac,T_frac,C_frac,G_frac])
+            
+            """
+            info=0.0
+            for i in range(0,4):
+                for j in range(0,4):
+                    info+= -(cm[i][j]*p[i])*np.log(cm[i][j]*p[i])
+            """
+    
+            info1=0.0
+            for i in range(0,4):
+                if frac[i] > 1/(j+1):
+                    info1+= -frac[i]*np.log(frac[i])
+            
+            #info2=0.0
+            
+            
+            GC_frac=(ts.count('G')+ts.count('C'))/j
+            q_comp_exp=sim33._PF__exp_comp
+            Z=sim33._PF__Z
+            N_G_32=sim33._PF__N_G
+            S_real=sim33._PF__S_real
+            Boltz_prob=sim33._PF__Boltz_prob
+    
+            row= ts +","+ str(j) +","+ str(info1)  +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) + "\n"        
+            #row= ts +","+ str(ts_len_32) +","+ str(info1) +","+ str(info2) +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) + "\n"
+            #row= ts +","+ ts_len_32 +","+ info +","+ GC_compo +","+ G_compo +","+ q_comp_exp +","+ Z +","+ N_G_32 +","+ S_real +","+ Boltz_prob + "\n"
+            data_sheet.write(row)            
+            
+            
     
 if run_model==41:
     import chwalk.cmain
@@ -392,9 +556,13 @@ if run_model==42:
 
 if run_model==43:
     import chwalk.cmain
-    sim43=chwalk.cmain.sim(model2_params,ts,ts_len,run_model,n_iters,PAM)
-    
+    sim43=chwalk.cmain.sim(model1_params,ts,ts_len,run_model,n_iters,PAM)
+
 if run_model==44:
     import chwalk.cmain
-    sim44=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
+    sim44=chwalk.cmain.sim(model2_params,ts,ts_len,run_model,n_iters,PAM)
+    
+if run_model==45:
+    import chwalk.cmain
+    sim45=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
 #C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk

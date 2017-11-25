@@ -32,6 +32,15 @@ class sim:
         self.__Z_list=[]
         
         if switch==41:
+            f1=plt.figure()
+            f2=plt.figure()
+            f3=plt.figure()
+            f4=plt.figure()
+            
+            ax1=f1.add_subplot(111)
+            ax2=f2.add_subplot(111)
+            ax3=f3.add_subplot(111)
+            ax4=f4.add_subplot(111)
         
             #ts_min=20
             #ts_max=20
@@ -55,15 +64,41 @@ class sim:
                 self.__Z_list.append(a._iter__Z)
                 
                 x=np.array(a._iter__j_list)
-                y=np.array(a._iter__Z_nc_list)
-                y=np.log(y)/np.log(10)
-                plt.plot(x,y)
+                y=np.array(a._iter__S_j_list)
+                y3=np.array(a._iter__Z_j_list)                  
                 
-                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))
-    
-            plt.title("nc Component of Z")
-            plt.ylabel("log(Z_nc)")
-            plt.xlabel("Binding Events")
+                y4=np.array(a._iter__Z_nc_list)
+                y4=np.log(y4)/np.log(10)
+
+                
+
+
+                ax1.plot(x,y)
+                ax2.plot( x,np.log(y)/np.log(10) )
+                ax3.plot(x,y3)
+                ax4.plot(x,y4)
+                #plt.legend(loc=4)
+                
+                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
+                
+
+            
+            ax1.set_title("Chromo-walk S")
+            ax1.set_ylabel("Adjusted S")
+            ax1.set_xlabel("Binding Events")
+            
+            ax2.set_title("Chromo-walk S")
+            ax2.set_ylabel("log(Adjusted S)")
+            ax2.set_xlabel("Binding Events")
+
+            ax3.set_title("Chromo-walk Z")
+            ax3.set_ylabel("Z")
+            ax3.set_xlabel("Binding Events")
+
+
+            ax4.set_title("nc Component of Z")
+            ax4.set_ylabel("log(Z_nc)")
+            ax4.set_xlabel("Binding Events")
             plt.show()
 
 
@@ -100,9 +135,54 @@ class sim:
         if switch==43:
             f1=plt.figure()
             f2=plt.figure()
+            f3=plt.figure()
             
             ax1=f1.add_subplot(111)
             ax2=f2.add_subplot(111)
+            ax3=f3.add_subplot(111)
+            
+            for ts_len in range(0,n_iters):
+                a=sw.random_genome1(param,ts)
+                
+                
+                x=np.array(a._random_genome1__j_list)
+                y=np.array(a._random_genome1__S_j_list)
+                y3=np.array(a._random_genome1__Z_j_list)
+
+                
+                #y=np.log(y)/np.log(10)
+                
+                ax1.plot(x,y)
+                ax2.plot( x,np.log(y)/np.log(10) )
+                ax3.plot(x,y3)
+                #plt.legend(loc=4)
+                
+                print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
+                
+
+            
+            ax1.set_title("Model 1 S")
+            ax1.set_ylabel("Adjusted S")
+            ax1.set_xlabel("Binding Events")
+            
+            ax2.set_title("Model 1 S")
+            ax2.set_ylabel("log(Adjusted S)")
+            ax2.set_xlabel("Binding Events")
+
+            ax3.set_title("Model 1 Z")
+            ax3.set_ylabel("Z")
+            ax3.set_xlabel("Binding Events")
+            
+            plt.show()
+
+        if switch==44:
+            f1=plt.figure()
+            f2=plt.figure()
+            f3=plt.figure()
+            
+            ax1=f1.add_subplot(111)
+            ax2=f2.add_subplot(111)
+            ax3=f3.add_subplot(111)
             
             for ts_len in range(0,n_iters):
                 a=sw.random_genome2(param,ts)
@@ -110,13 +190,14 @@ class sim:
                 
                 x=np.array(a._random_genome2__j_list)
                 y=np.array(a._random_genome2__S_j_list)
-                
+                y3=np.array(a._random_genome2__Z_j_list)                
 
                 
                 #y=np.log(y)/np.log(10)
                 
                 ax1.plot(x,y)
                 ax2.plot( x,np.log(y)/np.log(10) )
+                ax3.plot(x,y3)
                 #plt.legend(loc=4)
                 
                 print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
@@ -130,29 +211,37 @@ class sim:
             ax2.set_title("Model 2 S")
             ax2.set_ylabel("log(Adjusted S)")
             ax2.set_xlabel("Binding Events")
+
+            ax3.set_title("Model 2 Z")
+            ax3.set_ylabel("Z")
+            ax3.set_xlabel("Binding Events")
             
             plt.show()
             
-        if switch==44:
+        if switch==45:
             f1=plt.figure()
             f2=plt.figure()
+            f3=plt.figure()
             
             ax1=f1.add_subplot(111)
             ax2=f2.add_subplot(111)
+            ax3=f3.add_subplot(111)
             
             for ts_len in range(0,n_iters):
+                print("new iteration!")
                 a=sw.random_genome3(param,ts)
                 
                 
                 x=np.array(a._random_genome3__j_list)
                 y=np.array(a._random_genome3__S_j_list)
-                
+                y3=np.array(a._random_genome3__Z_j_list)                 
 
                 
                 #y=np.log(y)/np.log(10)
                 
                 ax1.plot(x,y)
                 ax2.plot( x,np.log(y)/np.log(10) )
+                ax3.plot(x,y3)
                 #plt.legend(loc=4)
                 
                 print("len(x)=%d, len(y)=%d" %(len(x),len(y)))   
@@ -166,6 +255,10 @@ class sim:
             ax2.set_title("Model 3 S")
             ax2.set_ylabel("log(Adjusted S)")
             ax2.set_xlabel("Binding Events")
+
+            ax3.set_title("Model 3 Z")
+            ax3.set_ylabel("Z")
+            ax3.set_xlabel("Binding Events")
             
             plt.show()
 

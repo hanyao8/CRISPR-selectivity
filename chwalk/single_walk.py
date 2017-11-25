@@ -212,6 +212,8 @@ class iter:
   
         self.__j_list=[]
         self.__Z_nc_list=[]
+        self.__Z_j_list=[]
+        self.__S_j_list=[]
 
 
         cs=self.__data[self.__site0-(1+len(self.__PAM))+1-self.__ts_len:self.__site0-(1+len(self.__PAM))+1]
@@ -235,20 +237,128 @@ class iter:
                     
                 G_binding+= (G_init[ nt_2_n[tgds[0]] ][ nt_2_n[ts[0]] ] + G_init[ nt_2_n[tgds[self.__ts_len-1]] ][ nt_2_n[ts[self.__ts_len-1]] ])
                 self.__Z+=np.exp(-self.__beta*G_binding)
+                self.__Z_nc=self.__Z-self.__q_comp
+                S_j=self.__q_comp/self.__Z_nc
                 
                 if tgds==cs:
                     self.__q_comp=np.exp(-self.__beta*G_binding)
                     self.__comp_count+=1
-                    print("comp site! count=%d" %(self.__comp_count))
+                    #print("comp site! count=%d" %(self.__comp_count))
             
                 if (j%5000000)==0:
                     print("running... %d" % (j))
                 
-                if (j%10000)==0:
+                if (j%50000)==(50000-1):
                     self.__j_list.append(j)
-                    self.__Z_nc_list.append(self.__Z-self.__q_comp)
+                    self.__Z_nc_list.append(self.__Z_nc)
+                    self.__Z_j_list.append(self.__Z_nc/j)
+                    self.__S_j_list.append(S_j)
+            
+                if (j%10000000)==(10000000-1):
+                    #print(tgds)
+                    print(ts,S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
             
         self.__S=1/((self.__Z/self.__q_comp)-1)
+
+class random_genome1:
+    
+    def __repr__(self):
+        return "A simulation which corresponds to a single walk of a targeting\
+        sequence along a random of DNA defined by statistical parameters input"
+        #ts:%s, \
+        #first position: %g" #% (ts,fp)
+        
+    def __init__(self,param,ts):
+        k_B=param[0][0]
+        T=param[1][0] #(High temp. approximation?)
+        self.__beta=1/k_B/T
+        self.__BE=param[1][1] #epsilon- given by hydrogen bond interactions between complementary NTs
+        self.__N_G=param[1][2]
+        #N_avo=param[0][1]
+        
+             
+        
+      
+        #Incorporating non-degenerate defect energies
+        #Expressing this information in a matrix
+        #ATCG 0123
+        
+        DE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    
+        
+        DE[1][0]=DE[0][1]=self.__BE #TA
+
+        DE[3][2]=DE[2][3]=self.__BE #GC
+
+    
+        
+
+        
+        
+
+        ts_len=len(ts)
+        
+        ts_n=[nt_2_n[ts[i]] for i in range(0,ts_len)]
+        
+
+
+  
+        self.__j_list=[]
+        self.__S_j_list=[]
+        self.__Z_j_list=[]
+
+
+        cs=F_cs(ts)
+        
+        print(ts)
+        print(cs)
+        
+        #self.__Z=0
+        #self.__q_comp=0
+        self.__comp_count=0
+        #self.__S=0
+        self.__Z_nc=0.0
+        
+        G_binding=0
+        for k in range(0,ts_len):
+            G_binding+=DE[ nt_2_n[cs[k]] ][ nt_2_n[ts[k]] ]
+                    
+        self.__q_comp=self.__Z=np.exp(-self.__beta*G_binding)
+        #print(self.__q_comp)
+        
+        #for j in range(0,self.__N_G-ts_len+1):
+        for j in range(0,1000000):
+            
+            if (j%100000)==0:
+                mini_genome=  np.random.choice([0,1,2,3],size=100000+ts_len-1,p=param[2]) 
+
+            
+            x=j%100000
+            
+            tgds=mini_genome[x:x+ts_len]
+            
+            G_binding=0
+            for k in range(0,ts_len):
+                G_binding+=DE[ tgds[k] ][ ts_n[k] ]
+                    
+
+            #print(np.exp(-self.__beta*G_binding))
+            self.__Z_nc+=np.exp(-self.__beta*G_binding)
+            #print(self.__Z_nc)
+            
+            if (j%50000)==(50000-1):
+                self.__j_list.append(j)
+                self.__Z_j_list.append(self.__Z_nc/j)
+                S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
+                self.__S_j_list.append(S_j)
+                
+            if (j%100000)==(100000-1):
+                #print(tgds)
+                print(S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
+            
+
+            
+        self.__S=self.__q_comp/self.__Z_nc
 
 
 class random_genome2:
@@ -307,7 +417,7 @@ class random_genome2:
   
         self.__j_list=[]
         self.__S_j_list=[]
-
+        self.__Z_j_list=[]
 
         cs=F_cs(ts)
         
@@ -330,6 +440,7 @@ class random_genome2:
         
         for j in range(0,self.__N_G-ts_len+1):
         #for j in range(0,1000000):
+        #for j in range(0,10):
             
             if (j%100000)==0:
                 mini_genome= [ np.random.choice([0,1,2,3],p=param[2]) ] 
@@ -354,12 +465,15 @@ class random_genome2:
             
             if (j%50000)==(50000-1):
                 self.__j_list.append(j)
+                self.__Z_j_list.append(self.__Z_nc/j)
                 S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
                 self.__S_j_list.append(S_j)
                 
             if (j%100000)==(100000-1):
                 #print(tgds)
                 print(S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
+
+            #print(tgds,self.__q_comp,np.exp(-self.__beta*G_binding),self.__Z_nc,j)
             
             """
             if (j%5000)==(5000-1):
@@ -571,13 +685,10 @@ class random_genome3:
         ts_len=len(ts)
         
         ts_n=[nt_2_n[ts[i]] for i in range(0,ts_len)]
-        
-
-
   
         self.__j_list=[]
         self.__S_j_list=[]
-
+        self.__Z_j_list=[]
 
         cs=F_cs(ts)
         
@@ -622,12 +733,13 @@ class random_genome3:
             self.__Z_nc+=np.exp(-self.__beta*G_binding)
             #print(self.__Z_nc)
             
-            if (j%500)==(500-1):
+            if (j%50000)==(50000-1):
                 self.__j_list.append(j)
+                self.__Z_j_list.append(self.__Z_nc/j)
                 S_j=self.__q_comp/(self.__Z_nc*self.__N_G/j)
                 self.__S_j_list.append(S_j)
                 
-            if (j%100000)==(100000-1):
+            if (j%200000)==(200000-1):
                 #print(tgds)
                 print(S_j,self.__q_comp,self.__Z_nc,self.__N_G,j)
             

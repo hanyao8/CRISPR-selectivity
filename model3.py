@@ -391,10 +391,12 @@ class PF:
         a=np.exp(-self.__beta*G_compl)
         self.__q_comp=p_cs * np.exp(-self.__beta*G_compl)
         self.__exp_comp=np.exp(-self.__beta*G_compl)
+        self.__Z=Z
         self.__Z_nc=self.__N_G*Z
         self.__S=1/((Z/self.__q_comp)-1) 
         #S_real=S/(N_G-ts_len)/p_cs
-        self.__S_real=np.exp(-self.__beta*G_compl)/self.__N_G/Z
+        self.__S_real=np.exp(-self.__beta*G_compl)/self.__N_G/self.__Z
+        self.__Boltz_prob=np.exp(-self.__beta*G_compl)/(np.exp(-self.__beta*G_compl)+self.__N_G*self.__Z)
 
         
         #The model requires defect energies to be known. At this moment it gives a somewhat erroneous value for the partition function

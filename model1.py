@@ -42,36 +42,37 @@ class PF:
         
         cs=[]
         p_cs=1
-        Z=1
+        self.__Z=1
         
         for a in range(0,ts_len):
             if ts[a]=='A':
                 n_A+=1
                 cs.append('T')
                 p_cs*=self.__p_T
-                Z*=( 1-self.__p_T + self.__p_T*np.exp(-self.__beta*self.__BE))
+                self.__Z*=( 1-self.__p_T + self.__p_T*np.exp(-self.__beta*self.__BE))
             if ts[a]=='T':
                 n_T+=1
                 cs.append('A')
                 p_cs*=self.__p_A
-                Z*=( 1-self.__p_A + self.__p_A*np.exp(-self.__beta*self.__BE))
+                self.__Z*=( 1-self.__p_A + self.__p_A*np.exp(-self.__beta*self.__BE))
             if ts[a]=='C':
                 n_C+=1
                 cs.append('G')
                 p_cs*=self.__p_G
-                Z*=( 1-self.__p_G + self.__p_G*np.exp(-self.__beta*self.__BE))
+                self.__Z*=( 1-self.__p_G + self.__p_G*np.exp(-self.__beta*self.__BE))
             if ts[a]=='G':
                 n_G+=1
                 cs.append('C')
                 p_cs*=self.__p_C
-                Z*=( 1-self.__p_C + self.__p_C*np.exp(-self.__beta*self.__BE))
+                self.__Z*=( 1-self.__p_C + self.__p_C*np.exp(-self.__beta*self.__BE))
             if ts[a]!='A' and  ts[a]!='T' and ts[a]!='C' and ts[a]!='G':
                 raise Exception("Invalid Nucleotide")
         
         
         self.__q_compl=p_cs * np.exp(-self.__beta*ts_len*self.__BE)
-        self.__S=1/((Z/self.__q_compl)-1)
-        self.__S_real=self.__S/(self.__N_G-ts_len)/p_cs #Assuming correct binding to to one unique site in the genome
+        self.__q_exp=np.exp(-self.__beta*ts_len*self.__BE)
+        self.__S=1/((self.__Z/self.__q_compl)-1)
+        self.__S_real=np.exp(-self.__beta*ts_len*self.__BE)/self.__N_G/self.__Z #Assuming correct binding to to one unique site in the genome
 
 
 class NPF:

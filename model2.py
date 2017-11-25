@@ -19,6 +19,7 @@ class PF:
         self.__beta=1/k_B/self.__T
         self.__BE=param[1][1] #epsilon- given by hydrogen bond interactions between complementary NTs
         self.__N_G=param[1][2]
+        N_avo=param[0][1]
         
         self.__p_A=param[2][0]
         self.__p_T=param[2][1]
@@ -196,6 +197,10 @@ class PF:
         DE[3][3]=param[4][3][3] #0.1*BE #GG
                 
         
+        #Initiation Energy
+        #At each end:
+        E_init=1.005*4184/N_avo
+        
         #Z=1
         
         #Initiation of the partition function factorisation- i.e. the first nucleotide position of the sequence
@@ -208,7 +213,7 @@ class PF:
         #re_ord_list_C=re_ord_list[8:12]
         #re_ord_list_G=re_ord_list[12:16]
         for i in range(0,16):
-            v_Z[i]=p[int(math.floor(i/4))]*np.exp(-self.__beta*DE[int(math.floor(i/4))][ ts_n[0] ])
+            v_Z[i]=p[int(math.floor(i/4))]*np.exp(-self.__beta*(DE[int(math.floor(i/4))][ ts_n[0] ] +2*E_init) )
         
         for pos in range(1,ts_len):
             v_Z_temp=[]
@@ -228,11 +233,13 @@ class PF:
         #Division by four because the last summation should not take place
         self.__Z=sum(v_Z)/4
             
-        G_compl=0
+        G_compl=2*E_init
         for i in range(0,ts_len):
             G_compl += DE[cs_n[i]][ts_n[i]]
+    
             
         self.__q_compl=p_cs * np.exp(-self.__beta*G_compl)
+        self.__q_exp=np.exp(-self.__beta*G_compl)
         self.__S=1/((self.__Z/self.__q_compl)-1) 
         self.__S_real=np.exp(-self.__beta*G_compl)/self.__N_G/self.__Z
         
