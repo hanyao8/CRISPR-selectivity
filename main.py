@@ -25,11 +25,8 @@ import numpy as np
 #import os
 import io
 
-<<<<<<< HEAD
 run_model=32
-=======
-run_model=11
->>>>>>> f7cdfc3b85b03d755910bb538f9631b652bf4e75
+#run_model=11
 #run_model=1,2,3
 
 k_B=1.38e-23
@@ -608,4 +605,5 @@ if run_model==44:
 if run_model==45:
     import chwalk.cmain
     sim45=chwalk.cmain.sim(model3_params,ts,ts_len,run_model,n_iters,PAM)
+	
 #C:\\Users\\Choon\\Documents\\GitHub\\CRISPR-selectivity-OO\\chwalk
