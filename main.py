@@ -12,8 +12,9 @@ Settings available:
 12: Model 1 MFT without Z factorisation
 21: Model 2 MFT with Z factorisation
 31: Model 3 MFT with Z factorisation
-32: Model 3 MFT Composition and entropy vs complementary exponent, Z, S data generation
-33: Model 3 MFT ts_len vs complementary exponent, Z, S data generation
+32: Model 3 MFT ts composition and entropy vs complementary exponent, Z, S- data generation
+33: Model 3 MFT ts_len vs complementary exponent, Z, S- data generation
+34: Model 3 MFT genome entropy vs Z,S- data generation
 41: Chromo-walk with fixed ts length with ts taken from different sites
 42: Chromo-walk at fixed site with varying length
 43: Chromo-walk on random genome for model 1
@@ -25,7 +26,7 @@ import numpy as np
 #import os
 import io
 
-run_model=32
+run_model=34
 #run_model=11
 #run_model=1,2,3
 
@@ -184,8 +185,8 @@ DE=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 
 
 
-DE[1][0]=DE[0][1]=BE #TA
-DE[3][2]=DE[2][3]=BE #GC
+#DE[1][0]=DE[0][1]=BE #TA
+#DE[3][2]=DE[2][3]=BE #GC
 
 
 
@@ -419,10 +420,14 @@ def F_cs(s): #Find complementary sequence
 nt_2_n={'A':0,'T':1,'C':2,'G':3}
 
 
-
-
-
-
+def cm_2_p(cm):
+    cm_tp=np.transpose(cm)
+    eigen_soln=np.linalg.eig(cm_tp)
+    for i in range(0,len(eigen_soln[0])):
+        if abs(np.real(eigen_soln[0][i])-1)<1e-5:
+            cm_2_p_soln=np.real(eigen_soln[1][:,i])
+            return(cm_2_p_soln/sum(cm_2_p_soln))
+    
 
 
 
@@ -584,7 +589,136 @@ if run_model==33: #Looping over sequences with different ts_len
             #row= ts +","+ ts_len_32 +","+ info +","+ GC_compo +","+ G_compo +","+ q_comp_exp +","+ Z +","+ N_G_32 +","+ S_real +","+ Boltz_prob + "\n"
             data_sheet.write(row)            
             
+if run_model==34:
+    import model3
+    data_sheet=io.open("C:\\Users\\Choon\\Desktop\\CRISPR\\Code\\results\\genome_entropy3.txt",'a')    
+    
+    model34_ts_array=['AATACAGTTCCTGCGGA','TTATCTGAACCAGCGGT','CCACTCGAATTAGTGGC','GGAGTGCAATTACTCCCG']
+    
+
+    
+    #model34_params=model3_params
+    #DE34=np.ones((4,4))*2.275*4184/N_avo
+    #DE34[1][0]=DE34[0][1]=DE34[3][2]=DE34[2][3]=-1.45*4184/N_avo
+    
+    #0.4125*4184/N_avo
+    
+    G_dpx34=np.zeros((4,4,4,4))
+    
+    #no defects
+    G_dpx34[0][0][1][1]=G_dpx34[1][1][0][0]=-1.45*4184/N_avo #AA/TT      
+    G_dpx34[0][1][1][0]=-1.45*4184/N_avo #AT/TA
+    G_dpx34[1][0][0][1]=-1.45*4184/N_avo #TA/AT
+    G_dpx34[2][0][3][1]=G_dpx34[1][3][0][2]=-1.45*4184/N_avo #CA/GT
+    G_dpx34[3][1][2][0]=G_dpx34[0][2][1][3]=-1.45*4184/N_avo #GT/CA
+    G_dpx34[2][1][3][0]=G_dpx34[0][3][1][2]=-1.45*4184/N_avo #CT/GA
+    G_dpx34[3][0][2][1]=G_dpx34[1][2][0][3]=-1.45*4184/N_avo #GA/CT
+    G_dpx34[2][3][3][2]=-1.45*4184/N_avo #CG/GC
+    G_dpx34[3][2][2][3]=-1.45*4184/N_avo #GC/CG
+    G_dpx34[3][3][2][2]=G_dpx34[2][2][3][3]=-1.45*4184/N_avo #GG/CC
+    
+    #single defects
+    G_dpx34[0][0][1][0]=G_dpx34[0][1][0][0]=0.4125*4184/N_avo
+    G_dpx34[0][0][1][2]=G_dpx34[2][1][0][0]=0.4125*4184/N_avo
+    G_dpx34[0][0][1][3]=G_dpx34[3][1][0][0]=0.4125*4184/N_avo
+    G_dpx34[0][1][1][1]=G_dpx34[1][1][1][0]=0.4125*4184/N_avo
+    G_dpx34[0][1][1][2]=G_dpx34[2][1][1][0]=0.4125*4184/N_avo
+    G_dpx34[0][1][1][3]=G_dpx34[3][1][1][0]=0.4125*4184/N_avo
+    G_dpx34[0][2][1][0]=G_dpx34[0][1][2][0]=0.4125*4184/N_avo
+    G_dpx34[0][2][1][1]=G_dpx34[1][1][2][0]=0.4125*4184/N_avo
+    G_dpx34[0][2][1][2]=G_dpx34[2][1][2][0]=0.4125*4184/N_avo
+    G_dpx34[0][3][1][0]=G_dpx34[0][1][3][0]=0.4125*4184/N_avo
+    G_dpx34[0][3][1][1]=G_dpx34[1][1][3][0]=0.4125*4184/N_avo
+    G_dpx34[0][3][1][3]=G_dpx34[3][1][3][0]=0.4125*4184/N_avo
+    
+    G_dpx34[1][0][0][0]=G_dpx34[0][0][0][1]=0.4125*4184/N_avo
+    G_dpx34[1][0][0][2]=G_dpx34[2][0][0][1]=0.4125*4184/N_avo
+    G_dpx34[1][0][0][3]=G_dpx34[3][0][0][1]=0.4125*4184/N_avo
+    G_dpx34[1][1][0][1]=G_dpx34[1][0][1][1]=0.4125*4184/N_avo
+    G_dpx34[1][1][0][2]=G_dpx34[2][0][1][1]=0.4125*4184/N_avo
+    G_dpx34[1][1][0][3]=G_dpx34[3][0][1][1]=0.4125*4184/N_avo
+    G_dpx34[1][2][0][0]=G_dpx34[0][0][2][1]=0.4125*4184/N_avo
+    G_dpx34[1][2][0][1]=G_dpx34[1][0][2][1]=0.4125*4184/N_avo
+    G_dpx34[1][2][0][2]=G_dpx34[2][0][2][1]=0.4125*4184/N_avo
+    G_dpx34[1][3][0][0]=G_dpx34[0][0][3][1]=0.4125*4184/N_avo
+    G_dpx34[1][3][0][1]=G_dpx34[1][0][3][1]=0.4125*4184/N_avo
+    G_dpx34[1][3][0][3]=G_dpx34[3][0][3][1]=0.4125*4184/N_avo
+    
+    G_dpx34[2][0][3][0]=G_dpx34[0][3][0][2]=0.4125*4184/N_avo
+    G_dpx34[2][0][3][2]=G_dpx34[2][3][0][2]=0.4125*4184/N_avo
+    G_dpx34[2][0][3][3]=G_dpx34[3][3][0][2]=0.4125*4184/N_avo
+    G_dpx34[2][1][3][1]=G_dpx34[1][3][1][2]=0.4125*4184/N_avo
+    G_dpx34[2][1][3][2]=G_dpx34[2][3][1][2]=0.4125*4184/N_avo
+    G_dpx34[2][1][3][3]=G_dpx34[3][3][1][2]=0.4125*4184/N_avo
+    G_dpx34[2][2][3][0]=G_dpx34[0][3][2][2]=0.4125*4184/N_avo
+    G_dpx34[2][2][3][1]=G_dpx34[1][3][2][2]=0.4125*4184/N_avo
+    G_dpx34[2][2][3][2]=G_dpx34[2][3][2][2]=0.4125*4184/N_avo
+    G_dpx34[2][3][3][0]=G_dpx34[0][3][3][2]=0.4125*4184/N_avo
+    G_dpx34[2][3][3][1]=G_dpx34[1][3][3][2]=0.4125*4184/N_avo
+    G_dpx34[2][3][3][3]=G_dpx34[3][3][3][2]=0.4125*4184/N_avo
+    
+    G_dpx34[3][0][2][0]=G_dpx34[0][2][0][3]=0.4125*4184/N_avo
+    G_dpx34[3][0][2][2]=G_dpx34[2][2][0][3]=0.4125*4184/N_avo
+    G_dpx34[3][0][2][3]=G_dpx34[3][2][0][3]=0.4125*4184/N_avo
+    G_dpx34[3][1][2][1]=G_dpx34[1][2][1][3]=0.4125*4184/N_avo
+    G_dpx34[3][1][2][2]=G_dpx34[2][2][1][3]=0.4125*4184/N_avo
+    G_dpx34[3][1][2][3]=G_dpx34[3][2][1][3]=0.4125*4184/N_avo
+    G_dpx34[3][2][2][0]=G_dpx34[0][2][2][3]=0.4125*4184/N_avo
+    G_dpx34[3][2][2][1]=G_dpx34[1][2][2][3]=0.4125*4184/N_avo
+    G_dpx34[3][2][2][2]=G_dpx34[2][2][2][3]=0.4125*4184/N_avo
+    G_dpx34[3][3][2][0]=G_dpx34[0][2][3][3]=0.4125*4184/N_avo
+    G_dpx34[3][3][2][1]=G_dpx34[1][2][3][3]=0.4125*4184/N_avo
+    G_dpx34[3][3][2][3]=G_dpx34[3][2][3][3]=0.4125*4184/N_avo
+    
+    G_avg34=np.ones(8)*2.275/2*4184/N_avo
+    G_init34=np.ones((4,4))*1.005*4184/N_avo
+    
+    model34_params=np.array([constants,params1,p,cm,G_dpx34,G_avg34,G_init34])
+    
+    for i in range(0,n_iters): 
+        cm_gnm=np.array([np.random.uniform(0,1,4) for i in range(0,4)])
+        cm_gnm=np.array([cm_gnm[i]/sum(cm_gnm[i]) for i in range(0,4)])
+        cm_gnm_tp=np.transpose(cm_gnm)
+        
+        p_gnm=cm_2_p(cm_gnm)
+        check=np.matmul(cm_gnm_tp,p_gnm)
+        if abs(p_gnm[0]-check[0])>1e-3:
+            raise Exception()
+        #print(cm_gnm)
+        #print(p_gnm)
+        #print("check:",check)
+        
+        info_gnm=0.0
+        for j in range(0,4):
+            for k in range(0,4):
+                info_gnm+= -(cm_gnm[j][k]*p_gnm[j])*np.log(cm_gnm[j][k]*p_gnm[j])
             
+        model34_params[2]=p_gnm
+        model34_params[3]=cm_gnm
+            
+        if i%500==0:
+            print("running... i=",i) 
+            
+        result=np.zeros(5)
+        for j in range(0,4):
+            sim34=model3.PF(model34_params,model34_ts_array[j])
+            result[0]+=sim34._PF__Z
+            result[1]+=sim34._PF__S_real
+            result[2]+=sim34._PF__Boltz_prob
+            result[3]+=sim34._PF__exp_comp
+            result[4]+=sim34._PF__N_G
+            #print(result)
+        result/=4
+        
+            
+        Z=result[0]
+        S_real=result[1]
+        Boltz_prob=result[2]
+        q_comp_exp=result[3]
+        N_G34=result[4]
+
+        row= str(i) +","+ str(info_gnm) +","+ str(Z)  +","+ str(S_real) +","+ str(Boltz_prob)  +","+ str(q_comp_exp) +","+ str(N_G34) + "\n"        
+        data_sheet.write(row)            
     
 if run_model==41:
     import chwalk.cmain

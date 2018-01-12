@@ -28,6 +28,9 @@ N_G=txt_data[1][7]
 S_real=txt_data[:,8]
 Boltz_prob=txt_data[:,9]
 
+
+#info histograms section
+"""
 n_S_hists=50 #number of selectivity histograms
 n_bins=50
 
@@ -47,7 +50,7 @@ info_pos=np.linspace(info_min+0.5*info_d,info_max-0.5*info_d,n_S_hists)
 for i in range(0,data_len):
     S_populations[info_index[i]].append(S_real[i])
     logS_populations[info_index[i]].append( np.log(S_real[i])/np.log(10) )
-
+"""
 
     
 
@@ -94,7 +97,7 @@ f10=plt.figure()
 f11=plt.figure()
 f12=plt.figure()
 """
-
+"""
 ax1=f1.add_subplot(111,projection='3d')
 for i in range(0,n_S_hists):
     hist,bins=np.histogram(logS_populations[i],bins=n_bins)
@@ -104,21 +107,25 @@ for i in range(0,n_S_hists):
 ax1.set_ylabel("ts Shannon Entropy")
 ax1.set_xlabel("log_10 (S_real)")
 ax1.set_zlabel("Freq")
-
-
 """
+
+ax1=f1.add_subplot(111)
 #ax1=f1.add_subplot(211)
 #ax1hist=f1.add_subplot(212)
 #ax1hist=ax1.twinx()
-ax2=f2.add_subplot(211)
-ax2hist=f2.add_subplot(212)
+
+ax2=f2.add_subplot(111)
+#ax2=f2.add_subplot(211)
+#ax2hist=f2.add_subplot(212)
 #ax2hist=ax2.twinx()
-ax3=f3.add_subplot(211)
-ax3hist=f3.add_subplot(212)
+
+ax3=f3.add_subplot(111)
+#ax3=f3.add_subplot(211)
+#ax3hist=f3.add_subplot(212)
 #ax3hist=ax3.twinx()
 
 
-
+"""
 ax4=f4.add_subplot(211)
 ax4hist=f4.add_subplot(212)
 #ax4hist=ax4.twinx()
@@ -168,41 +175,42 @@ ax3.set_ylabel("S_real")
 """
 
 
-"""
-ax1.scatter(info,np.log(S_real)/np.log(10),s=0.1,c=1-GC_frac,cmap=plt.cm.coolwarm)
+
+ax1sc=ax1.scatter(info,np.log(S_real)/np.log(10),s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 #ax1.scatter(info,np.log(S_real)/np.log(10),s=0.1,alpha=0.7,c=1-GC_frac,cmap=plt.cm.coolwarm)
 ax1.set_title("ts entropy vs log(S_real)")
 ax1.set_xlabel("ts Shannon Entropy")
 ax1.set_ylabel("log_10 (S_real)")
-#f1.colorbar(ax1sc)
+f1.colorbar(ax1sc)
 
-ax1hist.hist(info,bins=100,edgecolor='black',linewidth=0.6,fill=False)
+#ax1hist.hist(info,bins=100,edgecolor='black',linewidth=0.6,fill=False)
 #ax1hist.hist(info,bins=100,edgecolor='black',linewidth=0.35,fill=False)
 #ax1hist.hist(info,log=True,bins=100,alpha=0.5)
-ax1hist.set_ylabel("Frequency")
+#ax1hist.set_ylabel("Frequency")
 #ax1hist.yscale('log')
-ax1hist.set_xlabel("ts Shannon Entropy")
+#ax1hist.set_xlabel("ts Shannon Entropy")
 
 ax2.scatter(GC_frac,np.log(S_real)/np.log(10),s=0.1,c=1.4-info,cmap=plt.cm.coolwarm)
 ax2.set_title("ts GC composition vs log(S_real)")
 ax2.set_xlabel("ts GC composition")
 ax2.set_ylabel("log_10 (S_real)")
 
-ax2hist.hist(GC_frac,bins=100,edgecolor='black',linewidth=0.6,fill=False)
+#ax2hist.hist(GC_frac,bins=100,edgecolor='black',linewidth=0.6,fill=False)
 #ax2hist.hist(GC_frac,bins=100,edgecolor='black',linewidth=0.35,fill=False)
-ax2hist.set_ylabel("Frequency")
-ax2hist.set_xlabel("ts GC composition")
+#ax2hist.set_ylabel("Frequency")
+#ax2hist.set_xlabel("ts GC composition")
 
 ax3.scatter(G_frac,np.log(S_real)/np.log(10),s=0.1,c=1.4-info,cmap=plt.cm.coolwarm)
 ax3.set_title("ts G composition vs log(S_real)")
 ax3.set_xlabel("ts G composition")
 ax3.set_ylabel("log_10 (S_real)")
 
-ax3hist.hist(G_frac,bins=100,edgecolor='black',linewidth=0.6,fill=False)
+#ax3hist.hist(G_frac,bins=100,edgecolor='black',linewidth=0.6,fill=False)
 #ax3hist.hist(G_frac,bins=100,edgecolor='black',linewidth=0.35,fill=False)
-ax3hist.set_xlabel("ts G composition")
-ax3hist.set_ylabel("Frequency")
+#ax3hist.set_xlabel("ts G composition")
+#ax3hist.set_ylabel("Frequency")
 
+"""
 ax4.scatter(info,np.log(q_comp_exp)/np.log(10),s=0.1,c=1-GC_frac,cmap=plt.cm.coolwarm)
 ax4.set_title("ts entropy vs log(q_comp_exp)")
 ax4.set_xlabel("ts Shannon Entropy")

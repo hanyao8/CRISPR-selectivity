@@ -68,37 +68,37 @@ ax1.set_xlabel("ts length")
 ax1.set_ylabel("S_real")
 
 
-
-ax2.scatter(ts_len,np.log(S_real)/np.log(10),s=0.1)
+ax2sc=ax2.scatter(ts_len,np.log(S_real)/np.log(10),s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 ax2.set_title("ts len vs log(S_real)")
 ax2.set_xlabel("ts length")
 ax2.set_ylabel("log_10 (S_real)")
+f2.colorbar(ax2sc)
 
 
-
-ax3.scatter(ts_len,np.log(q_comp_exp)/np.log(10),s=0.1)
+ax3sc=ax3.scatter(ts_len,np.log(q_comp_exp)/np.log(10),s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 ax3.set_title("ts len vs log(q_comp_exp)")
 ax3.set_xlabel("ts length")
 ax3.set_ylabel("log_10 (q_comp_exp)")
+f3.colorbar(ax3sc)
 
 
-
-ax4.scatter(ts_len,np.log(Z)/np.log(10),s=0.1)
+ax4sc=ax4.scatter(ts_len,np.log(Z)/np.log(10),s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 ax4.set_title("ts len vs log(Z)")
 ax4.set_xlabel("ts length")
 ax4.set_ylabel("log_10 (Z)")
+f4.colorbar(ax4sc)
 
 
-
-ax5.scatter(ts_len,np.log(1-Boltz_prob)/np.log(10),s=0.1)
+ax5sc=ax5.scatter(ts_len,np.log(1-Boltz_prob)/np.log(10),s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 ax5.set_title("ts len vs log(Off-bind prob)")
 ax5.set_xlabel("ts length")
 ax5.set_ylabel("log_10 (Off-bind prob)")
+f5.colorbar(ax5sc)
 
-
-ax6.scatter(ts_len,1-Boltz_prob,s=0.1)
+ax6sc=ax6.scatter(ts_len,1-Boltz_prob,s=0.1,c=GC_frac,cmap=plt.cm.coolwarm)
 ax6.set_title("ts len vs Off-bind prob")
 ax6.set_xlabel("ts length")
 ax6.set_ylabel("Off-bind prob")
+f6.colorbar(ax6sc)
 
 plt.show()

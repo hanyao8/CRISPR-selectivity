@@ -7,10 +7,30 @@ from mpl_toolkits.mplot3d import Axes3D
 plotswitch=2
 plot_array=[11,13,15,17,19]
 
-txt_data=np.genfromtxt(r'C:\Users\Choon\Desktop\CRISPR\Code\results\result4.txt',delimiter=',')
+n_S_hists=20 #number of selectivity histograms
+n_bins=100
+
+txt_data=np.genfromtxt(r'C:\Users\Choon\Desktop\CRISPR\Code\results\result4.txt',delimiter=',',dtype=None)
 #txt_data=np.delete(txt_data,(385208),axis=0)
 
 #txt_data=txt_data[0:100000]
+
+
+
+
+###End of user interface###
+
+#11, 3.2-3.6, 4.1-4.7
+def ts_from_logSpop(tspop,logSpop,logS_start,logS_end):
+    while True:
+        x=int(np.random.uniform(0.0,len(tspop)))
+        if logSpop[x] > logS_start and logSpop[x] < logS_end:
+            return(tspop[x])
+            
+
+
+    
+
 
 data_len=len(txt_data)
 
@@ -25,10 +45,9 @@ N_G=txt_data[1][7]
 S_real=txt_data[:,8]
 Boltz_prob=txt_data[:,9]
 
-n_S_hists=20 #number of selectivity histograms
-n_bins=100
 
-info_max=max(info)*1.001
+
+info_max=max(info)*1.001 #this is absolutely necessary for rounding purposes later
 info_min=min(info)
 info_interval=info_max-info_min
 info_d=info_interval/n_S_hists
@@ -39,28 +58,34 @@ info_index=((info-info_min)/info_interval*n_S_hists ).astype(int)
 #Generate histograms
 
 
+ts_populations=[[] for i in range(0,n_S_hists)]
 S_populations=[[] for i in range(0,n_S_hists)]
 logS_populations=[[] for i in range(0,n_S_hists)]
 info_pos=np.linspace(info_min+0.5*info_d,info_max-0.5*info_d,n_S_hists)
 
 
 for i in range(0,data_len):
+    ts_populations[info_index[i]].append(ts[i])
     S_populations[info_index[i]].append(S_real[i])
     logS_populations[info_index[i]].append( np.log(S_real[i])/np.log(10) )
 
+ts1=ts_from_logSpop(ts_populations[11],logS_populations[11],3.2,3.6)
+ts2=ts_from_logSpop(ts_populations[11],logS_populations[11],4.1,4.7)
+
+f1=plt.figure()
 
 if plotswitch==1:
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
     
-    """
+    
     ax1=f1.add_subplot(111,projection='3d')
     for i in range(0,n_S_hists):
         hist,bins=np.histogram(logS_populations[i],bins=n_bins)
         xs=(bins[:-1]+bins[1:])/2
         ax1.bar(xs,hist,zs=info_pos,zdir='y',alpha=0.5)
-    """
+    
     
     for i in range(0,n_S_hists):
     #for z in info_pos:
@@ -76,7 +101,7 @@ if plotswitch==1:
     ax.set_zlabel('Z')
     
 if plotswitch==2:
-    f1=plt.figure()
+    
     ax1=f1.add_subplot(111)
     ax1.hist(logS_populations[plot_array[0]],n_bins)
     ax1.set_title("log(S_real) Histogram, ts entropy range: %f ~ %f"%(\
