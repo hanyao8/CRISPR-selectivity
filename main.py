@@ -14,7 +14,9 @@ Settings available:
 31: Model 3 MFT with Z factorisation
 32: Model 3 MFT ts composition and entropy vs complementary exponent, Z, S- data generation
 33: Model 3 MFT ts_len vs complementary exponent, Z, S- data generation
-34: Model 3 MFT genome entropy vs Z,S- data generation
+34: Model 3 MFT GENOME (not ts) entropy vs Z,S- data generation (using a set of 4 standard, unbiased targeting seqs)
+35: Model 3 MFT randomised binding energy matrix (fixed ts) (using genome with 'uniform statistics') (unbiased ts and unbiased genome)
+36: Model 3 MFT randomised binding energy matrix (fixed matrix) (using genome with 'uniform statistics')
 41: Chromo-walk with fixed ts length with ts taken from different sites
 42: Chromo-walk at fixed site with varying length
 43: Chromo-walk on random genome for model 1
@@ -23,10 +25,11 @@ Settings available:
 """
 
 import numpy as np
-#import os
+import os
 import io
+import time
 
-run_model=34
+run_model=35
 #run_model=11
 #run_model=1,2,3
 
@@ -48,7 +51,11 @@ ts='CGGTCCGT'
 ########################
 #run_model=32 settings
 ts_len_32=20
+
+#run_model=36 settings
+ts_len_36=17
 ########################
+
 
 
 #########################
@@ -70,23 +77,24 @@ ts_len_start42=15
 #######################
 
 
-"""
+
 p_A=0.25
 p_T=0.25
 p_C=0.25
 p_G=0.25
 
-
+"""
 p_A=0.1
 p_T=0.2
 p_C=0.3
 p_G=0.4
 """
+"""
 p_A=0.2794
 p_T=0.2826
 p_C=0.2176
 p_G=0.2204
-
+"""
 #Note that the correlated probabilities are only defined for a specific direction
 #Either 3' --> 5' or 5' --> 3'
         
@@ -125,7 +133,7 @@ cm[3][0]=0.1 #GA
 cm[3][1]=0.2 #GT
 cm[3][2]=0.3 #GC
 cm[3][3]=0.4 #GG
-
+"""
 
 
 cm[0][0]=0.25 #AA
@@ -149,7 +157,7 @@ cm[3][2]=0.25 #GC
 cm[3][3]=0.25 #GG
 
 
-"""        
+"""
 cm[0][0]=0.3148 #AA
 cm[0][1]=0.2445 #AT
 cm[0][2]=0.1805 #AC
@@ -169,7 +177,7 @@ cm[3][0]=0.2800 #GA
 cm[3][1]=0.2317 #GT
 cm[3][2]=0.2175 #GC
 cm[3][3]=0.2708 #GG
-
+"""
 
 
 
@@ -719,6 +727,168 @@ if run_model==34:
 
         row= str(i) +","+ str(info_gnm) +","+ str(Z)  +","+ str(S_real) +","+ str(Boltz_prob)  +","+ str(q_comp_exp) +","+ str(N_G34) + "\n"        
         data_sheet.write(row)            
+    
+if run_model==35:
+    import model3
+    import programs.stats_2_BEtensor as s2B
+    
+    pw_comp_dict={"A":"T","T":"A","C":"G","G":"C"}
+    num_comp_dict={0:1,1:0,2:3,3:2}
+    comp_dict={"TA":"AT","AT":"TA","AA":"TT","TT":"AA","CT":"GA","AG":"TC","GA":"CT","TC":"AG","GT":"CA","AC":"TG","CA":"GT","TG":"AC","GG":"CC","CC":"GG","CG":"GC","GC":"CG"}
+    nt_2_num={"A":0,"T":1,"C":2,"G":3}
+    num_2_nt={0:"A",1:"T",2:"C",3:"G"}
+    
+    """
+    def ntscore(a,b):
+        num=0
+        for i in range(0,2):
+            if not(b[i] == pw_comp_dict[a[i]]):
+                num+=1
+        return(num)
+        
+    def numscore(a,b,c,d):
+        num=0
+        if not(a == num_comp_dict[c]):
+            num+=1
+        if not(b == num_comp_dict[d]):
+            num+=1            
+        return(num)
+    """
+    
+    cur_time=time.time()
+    data_sheet=io.open(os.getcwd()+"\\main35result_%d.txt"%cur_time,'a')    
+    data_sheet.write("i" +","+ "info_gnm" +","+ "Z"  +","+ "S_real" +","+ "Boltz_prob"  +","+ "q_comp_exp" +","+ "N_G35" + "\n"     )    
+    
+    model35_ts_array=['AATACAGTTCCTGCGGA','TTATCTGAACCAGCGGT','CCACTCGAATTAGTGGC','GGAGTGCAATTACTCCCG']
+    
+    #pairs=["AA","AT","AC","AG","CA","CT","CC","CG","GC","GG","GA","GT","TC","TG","TA","TT"]
+    
+    BE_stats=np.array([[-1.4180,0.4152,2.2767],[0.512,0.507,0.564]]) #unique
+    #BE_stats2=np.array([[-1.4056,0.4152,2.2767],[0.433,0.507,0.543]])
+
+    G_avg35=np.ones(8)*2.275/2*4184/N_avo
+    G_init35=np.ones((4,4))*1.005*4184/N_avo    
+
+    #model34_params=model3_params
+    #DE34=np.ones((4,4))*2.275*4184/N_avo
+    #DE34[1][0]=DE34[0][1]=DE34[3][2]=DE34[2][3]=-1.45*4184/N_avo
+    
+    #0.4125*4184/N_avo
+    
+    info_gnm=0.0
+    for j in range(0,4):
+        for k in range(0,4):
+            info_gnm+= -(cm[j][k]*p[j])*np.log(cm[j][k]*p[j])
+    
+    for i in range(0,n_iters): 
+        G_dpx35=s2B.convert(BE_stats)*4184/N_avo
+
+
+        
+        model35_params=np.array([constants,params1,p,cm,G_dpx35,G_avg35,G_init35])
+        
+
+            
+            
+        if i%500==0:
+            print("running... i=",i) 
+            
+        result=np.zeros(5)
+        for j in range(0,4):
+            sim35=model3.PF(model35_params,model35_ts_array[j],DD_useavg=False)
+            result[0]+=sim35._PF__Z
+            result[1]+=sim35._PF__S_real
+            result[2]+=sim35._PF__Boltz_prob
+            result[3]+=sim35._PF__exp_comp
+            result[4]+=sim35._PF__N_G
+            #print(result)
+        result/=4
+        
+            
+        Z=result[0]
+        S_real=result[1]
+        Boltz_prob=result[2]
+        q_comp_exp=result[3]
+        N_G35=result[4]
+
+        row= str(i) +","+ str(info_gnm) +","+ str(Z)  +","+ str(S_real) +","+ str(Boltz_prob)  +","+ str(q_comp_exp) +","+ str(N_G35) + "\n"        
+        data_sheet.write(row)                
+    
+if run_model==36:
+
+    import model3
+    import programs.stats_2_BEtensor as s2B
+    
+    pw_comp_dict={"A":"T","T":"A","C":"G","G":"C"}
+    num_comp_dict={0:1,1:0,2:3,3:2}
+    comp_dict={"TA":"AT","AT":"TA","AA":"TT","TT":"AA","CT":"GA","AG":"TC","GA":"CT","TC":"AG","GT":"CA","AC":"TG","CA":"GT","TG":"AC","GG":"CC","CC":"GG","CG":"GC","GC":"CG"}
+    nt_2_num={"A":0,"T":1,"C":2,"G":3}
+    num_2_nt={0:"A",1:"T",2:"C",3:"G"}
+
+
+    cur_time=time.time()
+    data_sheet=io.open(os.getcwd()+"\\main36result_%d.txt"%cur_time,'a')    
+    #ts +","+ str(ts_len_32) +","+ str(info1)  +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) +","+ str(info_gnm) + "\n"   
+    data_sheet.write("ts" +","+ "ts_len_36" +","+ "ts_info"  +","+ "GC_frac" +","+ "G_frac" +","+ "q_comp_exp" +","+ "Z" +","+ "N_G_36" +","+ "S_real" +","+ "Boltz_prob" +","+ "info_gnm" + "\n"     )    
+
+    #pairs=["AA","AT","AC","AG","CA","CT","CC","CG","GC","GG","GA","GT","TC","TG","TA","TT"]
+    
+    BE_stats=np.array([[-1.4180,0.4152,2.2767],[0.512,0.507,0.564]]) #unique
+    #BE_stats2=np.array([[-1.4056,0.4152,2.2767],[0.433,0.507,0.543]])
+
+    G_dpx36=s2B.convert(BE_stats)*4184/N_avo
+    G_avg36=np.ones(8)*2.275/2*4184/N_avo
+    G_init36=np.ones((4,4))*1.005*4184/N_avo    
+    
+    model36_params=np.array([constants,params1,p,cm,G_dpx36,G_avg36,G_init36])
+
+    info_gnm=0.0
+    for j in range(0,4):
+        for k in range(0,4):
+            info_gnm+= -(cm[j][k]*p[j])*np.log(cm[j][k]*p[j])
+            
+    for i in range(0,n_iters):
+        
+        if i%5000==0:
+            print("running... i=",i)
+    
+        ts=np.random.choice(['A','T','C','G'])
+        for i in range(1,ts_len_36):
+            ts+=np.random.choice(['A','T','C','G'])
+        
+        #cs=F_cs(ts)
+        #ts_n=[nt_2_n[ts[i]] for i in range(0,len(ts))]
+        #cs_n=[nt_2_n[cs[i]] for i in range(0,len(cs))]
+        
+        sim36=model3.PF(model36_params,ts,DD_useavg=False)
+        
+        A_frac=ts.count('A')/ts_len_36
+        T_frac=ts.count('T')/ts_len_36
+        C_frac=ts.count('C')/ts_len_36
+        G_frac=ts.count('G')/ts_len_36
+        frac=np.array([A_frac,T_frac,C_frac,G_frac])
+        
+
+        info1=0.0
+        for i in range(0,4):
+            if frac[i] > 1/(ts_len_36+1):
+                info1+= -frac[i]*np.log(frac[i])
+        
+        #info2=0.0
+        
+        
+        GC_frac=(ts.count('G')+ts.count('C'))/ts_len_36
+        q_comp_exp=sim36._PF__exp_comp
+        Z=sim36._PF__Z
+        N_G_36=sim36._PF__N_G
+        S_real=sim36._PF__S_real
+        Boltz_prob=sim36._PF__Boltz_prob
+
+        row= ts +","+ str(ts_len_36) +","+ str(info1)  +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_36) +","+ str(S_real) +","+ str(Boltz_prob) +","+ str(info_gnm) + "\n"   
+        #row= ts +","+ str(ts_len_32) +","+ str(info1) +","+ str(info2) +","+ str(GC_frac) +","+ str(G_frac) +","+ str(q_comp_exp) +","+ str(Z) +","+ str(N_G_32) +","+ str(S_real) +","+ str(Boltz_prob) + "\n"
+        #row= ts +","+ ts_len_32 +","+ info +","+ GC_compo +","+ G_compo +","+ q_comp_exp +","+ Z +","+ N_G_32 +","+ S_real +","+ Boltz_prob + "\n"
+        data_sheet.write(row)
+
     
 if run_model==41:
     import chwalk.cmain
